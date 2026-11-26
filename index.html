@@ -244,7 +244,12 @@ setLang(localStorage.getItem('lang') || (navigator.language.startsWith('lt') ? '
 
 // mailto: does nothing without a mail app, so offer Gmail compose + copy.
 document.querySelectorAll('.copy').forEach(b => b.onclick = async () => {
-  await navigator.clipboard.writeText(b.dataset.email);
+  try { await navigator.clipboard.writeText(b.dataset.email); }
+  catch (_) {
+    // Older browsers / blocked clipboard API: copy through a hidden field.
+    const t = Object.assign(document.createElement('textarea'), { value: b.dataset.email });
+    document.body.append(t); t.select(); document.execCommand('copy'); t.remove();
+  }
   document.querySelector('.toast').textContent =
     document.documentElement.lang === 'lt' ? lt.copied : 'Address copied';
 });
