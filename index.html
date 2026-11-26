@@ -91,6 +91,8 @@
   .rows dt { color: var(--muted); }
   .rows dd { margin: 0; font-weight: 600; }
   .rows a { color: var(--ink); text-decoration: none; }
+  button.btn { font: inherit; cursor: pointer; }
+  .toast { margin-top: 14px; min-height: 24px; color: var(--a1); font-weight: 600; }
   footer { padding: 40px 0 56px; color: var(--muted); font-size: 14px; text-align: center; }
 
   .reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
@@ -118,7 +120,7 @@
     <h1 data-i18n-html="hero_title">Practical <em>AI</em> and thoughtful <em>mobile apps</em>.</h1>
     <p data-i18n="hero_text">We help businesses turn AI from a buzzword into everyday results, and we design and build mobile apps people actually enjoy using.</p>
     <div class="ctas">
-      <a class="btn primary" href="mailto:tadas@chapsconsulting.com" data-i18n="cta">Get in touch</a>
+      <a class="btn primary" href="#contact" data-i18n="cta">Get in touch</a>
       <a class="btn ghost" href="#apps" data-i18n="cta2">See our apps</a>
     </div>
   </div>
@@ -183,7 +185,11 @@
     <div class="card reveal">
       <h2 data-i18n="contact_title">Contact</h2>
       <p class="lead" data-i18n="contact_text">Have an idea or a question? Write to us and we'll reply within one business day.</p>
-      <a class="btn primary" href="mailto:tadas@chapsconsulting.com">tadas@chapsconsulting.com</a>
+      <div class="ctas">
+        <a class="btn primary" href="https://mail.google.com/mail/?view=cm&to=tadas@chapsconsulting.com" target="_blank" rel="noopener" data-i18n="write">Write an email</a>
+        <button class="btn ghost copy" data-email="tadas@chapsconsulting.com"><span data-i18n="copy">Copy</span>&nbsp;tadas@chapsconsulting.com</button>
+      </div>
+      <div class="toast" role="status" aria-live="polite"></div>
       <dl class="rows">
         <dt data-i18n="c_company">Company</dt><dd>MB „Chaps consulting“</dd>
         <dt data-i18n="c_code">Company code</dt><dd>307056816</dd>
@@ -218,7 +224,7 @@ const lt = {
   privacy: 'Privatumo politika',
   contact_title: 'Kontaktai',
   c_company: 'Įmonė', c_code: 'Įmonės kodas', c_address: 'Adresas', c_address_v: 'Juodasis kelias 22B, LT-13307 Vilnius, Lietuva',
-  c_email: 'El. paštas', c_phone: 'Telefonas', footer_city: 'Vilnius, Lietuva'
+  c_email: 'El. paštas', write: 'Rašyti laišką', copy: 'Kopijuoti', copied: 'Adresas nukopijuotas', c_phone: 'Telefonas', footer_city: 'Vilnius, Lietuva'
 };
 // English is in the HTML; remember it before switching.
 const en = {};
@@ -236,6 +242,12 @@ function setLang(l) {
 document.querySelectorAll('[data-lang]').forEach(b => b.onclick = () => setLang(b.dataset.lang));
 setLang(localStorage.getItem('lang') || (navigator.language.startsWith('lt') ? 'lt' : 'en'));
 
+// mailto: does nothing without a mail app, so offer Gmail compose + copy.
+document.querySelectorAll('.copy').forEach(b => b.onclick = async () => {
+  await navigator.clipboard.writeText(b.dataset.email);
+  document.querySelector('.toast').textContent =
+    document.documentElement.lang === 'lt' ? lt.copied : 'Address copied';
+});
 const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 });
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 </script>
